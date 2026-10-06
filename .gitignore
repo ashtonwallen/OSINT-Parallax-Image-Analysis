@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.env*
+!.env.example
+out/
+test-results/
+playwright-report/
+*.tsbuildinfo
+parallax-provider-config*.json
