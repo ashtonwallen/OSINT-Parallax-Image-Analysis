@@ -4,7 +4,7 @@ test('follow-up supports context, retries, local history and report exports', as
   await page.goto('./settings');
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('openai');
   await page.getByPlaceholder('Enter your API key').fill('dummy-chat-key');
-  await page.getByRole('button', { name: 'Use provider' }).click();
+  await page.getByRole('button', { name: 'Save settings' }).click();
   await page.getByRole('link', { name: 'Back to investigation' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
@@ -61,7 +61,7 @@ test('category inspection sends a crop, keeps separate history, and preserves ca
   await page.goto('./settings');
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('openai');
   await page.getByPlaceholder('Enter your API key').fill('dummy-category-key');
-  await page.getByRole('button', { name: 'Use provider' }).click();
+  await page.getByRole('button', { name: 'Save settings' }).click();
   await page.getByRole('link', { name: 'Back to investigation' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(

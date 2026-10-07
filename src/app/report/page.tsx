@@ -48,16 +48,14 @@ export default function Report() {
         INVESTIGATION OUTPUT
       </div>
       <h1>Verification report</h1>
-      <p className="document-lead">
-        A transparent record of what you observed, what you tested, and what remains unknown.
-      </p>
+      <p className="document-lead">Export image details, observations, notes, and hypotheses.</p>
       {analysis && <LocationHypotheses analysis={analysis} />}
       {!evidence ? (
         <div className="panel report-empty">
           <FileText size={40} strokeWidth={1} />
           <h2>No investigation loaded</h2>
           <p>
-            Upload a file or explore a demo. Your findings will come together here.
+            Upload an image or load a sample to create a report.
             <br />
             Reopen an existing case from the History pane, or upload a new image.
           </p>

@@ -7,7 +7,7 @@ test('demo, tool navigation, exports and mobile layout', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Image evidence analysis' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Image analysis' })).toBeVisible();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(page.getByText('square-synthetic.jpg', { exact: true }).last()).toBeVisible();
   await expect(page.getByText('No readable camera or editing metadata.')).toBeVisible();
@@ -139,4 +139,28 @@ test('workspace has no automated WCAG A/AA accessibility violations', async ({ p
       tab,
     ).toEqual([]);
   }
+});
+
+test('mobile workspace keeps tools before samples and history closes with Escape or a selection', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('./');
+  await expect(page.getByRole('heading', { name: 'Image analysis', exact: true })).toBeVisible();
+  await expect(page.getByRole('tablist')).toHaveCount(0);
+  await page.getByRole('button', { name: /The afternoon square/ }).click();
+  await expect(page.getByRole('tablist')).toBeVisible();
+  const tools = await page.locator('.analysis-column').boundingBox();
+  const samples = await page.locator('.sample-browser').boundingBox();
+  expect(tools!.y).toBeLessThan(samples!.y);
+  await expect(page.locator('.history-open')).toHaveCount(0);
+  await page.getByRole('button', { name: 'History', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Close history', exact: true })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('complementary', { name: 'Investigation history' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'History', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'History', exact: true }).click();
+  await expect(page.locator('.history-open')).toHaveCount(1);
+  await page.locator('.history-open').click();
+  await expect(page.getByRole('complementary', { name: 'Investigation history' })).toHaveCount(0);
 });

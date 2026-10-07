@@ -1,18 +1,27 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { FileImage, Trash2, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useInvestigation } from './investigation-provider';
-export function HistoryPane({ close }: { close: () => void }) {
-  const { history, activeId, openSaved, deleteSaved, historyError, saveStatus } =
+export function HistoryPane({ close, overlay }: { close: () => void; overlay: boolean }) {
+  const closeButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (overlay) closeButton.current?.focus();
+  }, [overlay]);
+  const { history, activeId, openSaved, deleteSaved, historyError, saveStatus, busy } =
     useInvestigation();
   const router = useRouter();
   const [deleting, setDeleting] = useState('');
   return (
-    <aside className="history-pane" aria-label="Investigation history">
+    <aside id="investigation-history" className="history-pane" aria-label="Investigation history">
       <div className="history-heading">
         <h2>Investigations</h2>
-        <button className="text-button" aria-label="Close history" onClick={close}>
+        <button
+          ref={closeButton}
+          className="text-button"
+          aria-label="Close history"
+          onClick={close}
+        >
           <X size={17} />
         </button>
       </div>
@@ -22,9 +31,13 @@ export function HistoryPane({ close }: { close: () => void }) {
           <div key={item.id} className={`history-item ${activeId === item.id ? 'active' : ''}`}>
             <button
               className="history-open"
+              disabled={busy}
+              aria-current={activeId === item.id ? 'true' : undefined}
+              title={item.name}
               onClick={async () => {
                 await openSaved(item.id);
                 router.push('/');
+                if (overlay) close();
               }}
             >
               <FileImage size={17} />

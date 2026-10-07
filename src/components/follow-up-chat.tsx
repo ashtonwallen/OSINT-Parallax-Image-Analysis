@@ -37,7 +37,7 @@ export function FollowUpChat({ disabled, category }: { disabled: boolean; catego
   );
   useEffect(() => {
     if (log.current) log.current.scrollTop = log.current.scrollHeight;
-  }, [chat, pending]);
+  }, [allChat, pending]);
 
   async function send(questionText = draft) {
     if (
@@ -109,11 +109,11 @@ export function FollowUpChat({ disabled, category }: { disabled: boolean; catego
       <h3 id={titleId}>
         {category ? `Inspect ${category.toLowerCase()}` : 'Discuss the findings'}
       </h3>
-      <p className="fine-print">
-        {category
-          ? 'A separate inspection of this category. Identifications and location implications remain unverified.'
-          : 'Ask about a clue, challenge a conclusion, or plan a verification step. Replies are unverified.'}
-      </p>
+      {!category && (
+        <p className="fine-print">
+          Ask about a clue or the next verification step. Replies are unverified.
+        </p>
+      )}
       {category && (
         <>
           {evidence && (
@@ -134,7 +134,7 @@ export function FollowUpChat({ disabled, category }: { disabled: boolean; catego
             disabled={disabled || Boolean(pending) || Boolean(configError)}
             onClick={() => void send(categoryQuestion(category))}
           >
-            Analyse further
+            {pending ? 'Analysing...' : 'Analyse further'}
           </button>
         </>
       )}
@@ -189,13 +189,14 @@ export function FollowUpChat({ disabled, category }: { disabled: boolean; catego
           Configure a provider to ask follow-up questions.{' '}
           <Link href="/settings">Provider settings</Link>
         </p>
-      ) : (
+      ) : !category || expanded || chat.length > 0 ? (
         <p className="fine-print">
-          Send shares the resized image, {category ? 'category findings' : 'current findings'} and
-          up to five recent exchanges with {provider}. The full conversation saves in this browser.
-          Provider retention policies apply.
+          Send shares {region ? 'the selected crop' : 'the resized image'},{' '}
+          {category ? 'category findings' : 'current findings'} and up to five recent exchanges with{' '}
+          {provider}. The full conversation saves in this browser. Provider retention policies
+          apply.
         </p>
-      )}
+      ) : null}
       {(!category || expanded || chat.length > 0) && (
         <form
           onSubmit={(event) => {

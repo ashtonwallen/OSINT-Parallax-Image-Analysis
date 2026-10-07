@@ -23,7 +23,7 @@ test('provider config files round-trip keys and cloud analysis uses the selected
   });
   await expect(page.getByRole('combobox', { name: 'Provider', exact: true })).toHaveValue('openai');
   await expect(page.getByPlaceholder('Enter your API key')).toHaveValue('dummy-ui-key-for-test');
-  await page.getByRole('button', { name: 'Use provider' }).click();
+  await page.getByRole('button', { name: 'Save settings' }).click();
   await page.getByRole('link', { name: 'Back to investigation' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
@@ -79,7 +79,7 @@ test('provider config files round-trip keys and cloud analysis uses the selected
 test('local inference connects directly to the configured server', async ({ page }) => {
   await page.goto('./settings');
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('local');
-  await page.getByRole('button', { name: 'Use provider' }).click();
+  await page.getByRole('button', { name: 'Save settings' }).click();
   await page.getByRole('link', { name: 'Back to investigation' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
@@ -155,7 +155,7 @@ test('provider profiles persist across reload and reopening, and clear removes t
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('openai');
   await page.getByPlaceholder('Enter your API key').fill('dummy-persistent-key');
   await page.getByLabel('Model ID').fill('saved-vision-model');
-  await page.getByRole('button', { name: 'Use provider', exact: true }).click();
+  await page.getByRole('button', { name: 'Save settings', exact: true }).click();
   await page.reload();
   await expect(page.getByRole('combobox', { name: 'Provider', exact: true })).toHaveValue('openai');
   await expect(page.getByLabel('Model ID')).toHaveValue('saved-vision-model');
@@ -183,7 +183,7 @@ test('unavailable browser storage keeps settings usable and reports the save fai
   });
   await page.goto('./settings');
   await page.getByPlaceholder('Enter your API key').fill('dummy-unsaved-key');
-  await page.getByRole('button', { name: 'Use provider', exact: true }).click();
+  await page.getByRole('button', { name: 'Save settings', exact: true }).click();
   await expect(
     page.getByText(
       'Settings work in this tab, but browser storage is unavailable. Download a config file to keep them.',

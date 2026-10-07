@@ -81,10 +81,7 @@ function WorkspaceSession() {
     <div className="workspace">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">
-            <span className="accent-line" /> IMAGE VERIFICATION
-          </div>
-          <h1>Image evidence analysis</h1>
+          <h1>Image analysis</h1>
           <p>Open source image intelligence</p>
         </div>
         <Link href="/report" className="button secondary report-top">
@@ -95,13 +92,10 @@ function WorkspaceSession() {
       </div>
       <div className="privacy-banner">
         <ShieldCheck size={16} />
-        <span>
-          Images are processed in your browser.
-          {' Visual analysis sends a copy only when you run it with a configured provider.'}
-        </span>
+        <span>Images stay on this device. AI analysis sends a copy to your selected provider.</span>
         <span className="privacy-badge">SAVED ON THIS DEVICE</span>
       </div>
-      <div className="workspace-grid">
+      <div className={`workspace-grid ${evidence ? 'has-image' : 'empty-workspace'}`}>
         <section className="evidence-column">
           <div className="panel image-panel">
             <div className="panel-heading">
@@ -240,7 +234,7 @@ function WorkspaceSession() {
                   <small>
                     {evidence
                       ? `${evidence.width} × ${evidence.height} px · ${(evidence.size / 1024 / 1024).toFixed(2)} MB`
-                      : 'No sign-up. No image uploads to our servers.'}
+                      : 'JPEG, PNG or WebP. Up to 20 MB.'}
                   </small>
                 </span>
               </div>
@@ -285,36 +279,38 @@ function WorkspaceSession() {
               </button>
             </div>
           )}
-          <div className="samples-heading">
-            <h3>Sample images</h3>
-            <span>
-              LOAD SAMPLE <ArrowRight size={13} />
-            </span>
+          <div className="sample-browser">
+            <div className="samples-heading">
+              <h3>Sample images</h3>
+              <span>
+                LOAD SAMPLE <ArrowRight size={13} />
+              </span>
+            </div>
+            <div className="sample-grid">
+              {demos.map((item) => (
+                <button
+                  key={item.id}
+                  disabled={busy}
+                  className={`sample-card ${evidence?.demo === item.id ? 'selected' : ''}`}
+                  onClick={() => void demo(item.id)}
+                >
+                  <img src={asset(item.image)} alt={item.title} />
+                  <div className="sample-shade" />
+                  <span className="sample-tag">{item.tag}</span>
+                  <span className="sample-caption">
+                    <strong>{item.title}</strong>
+                    <small>{item.region}</small>
+                  </span>
+                  <span className="sample-arrow">
+                    {evidence?.demo === item.id ? <Check size={15} /> : <ArrowUpRight size={16} />}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="sample-disclaimer">
+              Self-generated scenes. Illustrative clues. No real event or location claims.
+            </p>
           </div>
-          <div className="sample-grid">
-            {demos.map((item) => (
-              <button
-                key={item.id}
-                disabled={busy}
-                className={`sample-card ${evidence?.demo === item.id ? 'selected' : ''}`}
-                onClick={() => void demo(item.id)}
-              >
-                <img src={asset(item.image)} alt={item.title} />
-                <div className="sample-shade" />
-                <span className="sample-tag">{item.tag}</span>
-                <span className="sample-caption">
-                  <strong>{item.title}</strong>
-                  <small>{item.region}</small>
-                </span>
-                <span className="sample-arrow">
-                  {evidence?.demo === item.id ? <Check size={15} /> : <ArrowUpRight size={16} />}
-                </span>
-              </button>
-            ))}
-          </div>
-          <p className="sample-disclaimer">
-            Self-generated scenes. Illustrative clues. No real event or location claims.
-          </p>
           <div className="tip-card">
             <span className="tip-icon">
               <Camera size={18} />
@@ -326,82 +322,84 @@ function WorkspaceSession() {
                 and remove location tags with a trusted photo editor.
               </p>
             </div>
-            <ArrowUpRight size={17} />
           </div>
         </section>
-        <section className="analysis-column">
-          <div className="panel tools-panel">
-            <div className="panel-heading">
-              <div>
-                <span className="eyebrow">02</span>
-                <h2>Investigate</h2>
+        {evidence && (
+          <section className="analysis-column" aria-label="Image analysis tools">
+            <div className="panel tools-panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="eyebrow">02</span>
+                  <h2>Analysis tools</h2>
+                </div>
               </div>
-              <span className="muted small">Analysis tools</span>
+              <div className="tool-tabs" role="tablist" aria-label="Verification tools">
+                {tabs.map(({ name, icon: Icon }) => (
+                  <button
+                    key={name}
+                    role="tab"
+                    aria-selected={tab === name}
+                    tabIndex={tab === name ? 0 : -1}
+                    id={`tab-${name.replaceAll(' ', '-')}`}
+                    aria-controls="tool-content"
+                    className={tab === name ? 'selected' : ''}
+                    onClick={() => setTab(name)}
+                    onKeyDown={(event) => {
+                      const index = tabs.findIndex((item) => item.name === name);
+                      const next =
+                        event.key === 'ArrowRight'
+                          ? (index + 1) % tabs.length
+                          : event.key === 'ArrowLeft'
+                            ? (index + tabs.length - 1) % tabs.length
+                            : event.key === 'Home'
+                              ? 0
+                              : event.key === 'End'
+                                ? tabs.length - 1
+                                : -1;
+                      if (next < 0) return;
+                      event.preventDefault();
+                      setTab(tabs[next].name);
+                      document
+                        .getElementById(`tab-${tabs[next].name.replaceAll(' ', '-')}`)
+                        ?.focus();
+                    }}
+                  >
+                    <Icon size={16} />
+                    <span>{name}</span>
+                  </button>
+                ))}
+              </div>
+              <div
+                id="tool-content"
+                role="tabpanel"
+                aria-labelledby={`tab-${tab.replaceAll(' ', '-')}`}
+                className="tool-content"
+              >
+                {tab === 'Visual clues' ? (
+                  <VisualClues key={evidence?.url} />
+                ) : tab === 'Metadata' ? (
+                  <MetadataPanel key={evidence?.url} />
+                ) : tab === 'Reverse search' ? (
+                  <ReverseSearch />
+                ) : (
+                  <Chronolocation key={evidence?.url} />
+                )}
+              </div>
             </div>
-            <div className="tool-tabs" role="tablist" aria-label="Verification tools">
-              {tabs.map(({ name, icon: Icon }) => (
-                <button
-                  key={name}
-                  role="tab"
-                  aria-selected={tab === name}
-                  tabIndex={tab === name ? 0 : -1}
-                  id={`tab-${name.replaceAll(' ', '-')}`}
-                  aria-controls="tool-content"
-                  className={tab === name ? 'selected' : ''}
-                  onClick={() => setTab(name)}
-                  onKeyDown={(event) => {
-                    const index = tabs.findIndex((item) => item.name === name);
-                    const next =
-                      event.key === 'ArrowRight'
-                        ? (index + 1) % tabs.length
-                        : event.key === 'ArrowLeft'
-                          ? (index + tabs.length - 1) % tabs.length
-                          : event.key === 'Home'
-                            ? 0
-                            : event.key === 'End'
-                              ? tabs.length - 1
-                              : -1;
-                    if (next < 0) return;
-                    event.preventDefault();
-                    setTab(tabs[next].name);
-                    document.getElementById(`tab-${tabs[next].name.replaceAll(' ', '-')}`)?.focus();
-                  }}
-                >
-                  <Icon size={16} />
-                  <span>{name}</span>
-                </button>
-              ))}
+            <div className="report-callout">
+              <div className="report-icon">
+                <FileText size={22} />
+              </div>
+              <div>
+                <h3>Verification report</h3>
+                <p>Review findings and export PDF or Markdown.</p>
+              </div>
+              <Link href="/report" aria-label="Open verification report">
+                <ArrowRight size={20} />
+              </Link>
             </div>
-            <div
-              id="tool-content"
-              role="tabpanel"
-              aria-labelledby={`tab-${tab.replaceAll(' ', '-')}`}
-              className="tool-content"
-            >
-              {tab === 'Visual clues' ? (
-                <VisualClues key={evidence?.url} />
-              ) : tab === 'Metadata' ? (
-                <MetadataPanel key={evidence?.url} />
-              ) : tab === 'Reverse search' ? (
-                <ReverseSearch />
-              ) : (
-                <Chronolocation key={evidence?.url} />
-              )}
-            </div>
-          </div>
-          <div className="report-callout">
-            <div className="report-icon">
-              <FileText size={22} />
-            </div>
-            <div>
-              <h3>Verification report</h3>
-              <p>Review findings and export PDF or Markdown.</p>
-            </div>
-            <Link href="/report" aria-label="Open verification report">
-              <ArrowRight size={20} />
-            </Link>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
       {expanded && evidence && (
         <div
@@ -473,9 +471,6 @@ function VisualClues() {
   return (
     <>
       <div className="section-intro">
-        <span className="mini-label">
-          <Sparkles size={13} /> VISUAL OBSERVATIONS
-        </span>
         <h3>Visual clues</h3>
         <p>Observations grouped by category, with confidence and suggested regions.</p>
       </div>
@@ -493,9 +488,7 @@ function VisualClues() {
       )}
       <div className="provider-summary">
         <span>
-          {aiEnabled
-            ? `${providerName} / ${settings.profiles[settings.provider].model}`
-            : 'Visual analysis needs a provider.'}
+          {aiEnabled ? `${providerName} / ${settings.profiles[settings.provider].model}` : ''}
         </span>
         <Link className="text-button" href="/settings">
           Provider settings <ArrowUpRight size={14} />

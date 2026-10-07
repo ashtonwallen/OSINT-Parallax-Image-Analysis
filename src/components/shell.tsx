@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useRef, useState, useSyncExternalStore } from 'react';
+import { useRef, useState, useEffect, useSyncExternalStore } from 'react';
 import {
   Aperture,
   ScanLine,
@@ -27,6 +27,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const { clear, evidence, load } = useInvestigation();
   const router = useRouter();
   const newFile = useRef<HTMLInputElement>(null);
+  const historyButton = useRef<HTMLButtonElement>(null);
   const wide = useSyncExternalStore(
     subscribeWidth,
     () => window.matchMedia(wideQuery).matches,
@@ -34,6 +35,21 @@ export function Shell({ children }: { children: React.ReactNode }) {
   );
   const [historyOverride, setShowHistory] = useState<boolean | null>(null);
   const showHistory = historyOverride ?? wide;
+  useEffect(() => {
+    if (!showHistory || wide) return;
+    const toggle = historyButton.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setShowHistory(false);
+    };
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', escape);
+      toggle?.focus();
+    };
+  }, [showHistory, wide]);
   function newInvestigation() {
     clear();
     newFile.current?.click();
@@ -60,6 +76,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <Link
                 key={href}
                 href={href}
+                title={label}
+                aria-current={pathname === href ? 'page' : undefined}
                 className={`nav-item ${pathname === href ? 'active' : ''}`}
               >
                 <Icon size={18} />
@@ -79,7 +97,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </button>
           <div className="sidebar-note">
             <Fingerprint size={23} />
-            <h3>Current session</h3>
+            <h3>Current image</h3>
             <p>{evidence ? evidence.name : 'No image loaded'}</p>
             <p>Saved automatically in this browser.</p>
             <Link href="/methodology">
@@ -109,19 +127,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
       />
       <div className="main-shell">
         <header className="topbar">
-          <span>
-            <span className="status-dot" /> PARALLAX / OSINT WORKSPACE
+          <span className="current-file" title={evidence?.name}>
+            {evidence?.name || 'No image selected'}
           </span>
           <div>
             <button
+              ref={historyButton}
               className="text-button history-toggle"
+              aria-controls="investigation-history"
               onClick={() => setShowHistory(!showHistory)}
               aria-expanded={showHistory}
             >
               <History size={15} />
               History
             </button>
-            <span className="version">BETA / V1.0</span>
             <Link href="/methodology">
               How it works <ArrowUpRight size={14} />
             </Link>
@@ -133,7 +152,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <span>For public & news imagery. Never for locating private individuals.</span>
         </footer>
       </div>
-      {showHistory && <HistoryPane close={() => setShowHistory(false)} />}
+      {showHistory && (
+        <>
+          {!wide && (
+            <button
+              className="history-backdrop"
+              aria-label="Dismiss history"
+              onClick={() => setShowHistory(false)}
+              tabIndex={-1}
+            />
+          )}
+          <HistoryPane overlay={!wide} close={() => setShowHistory(false)} />
+        </>
+      )}
     </div>
   );
 }

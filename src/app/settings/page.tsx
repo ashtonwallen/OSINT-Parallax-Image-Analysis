@@ -64,7 +64,7 @@ function SettingsForm() {
       const parsed = settingsSchema.parse(JSON.parse(await file.text()));
       setDraft(parsed);
       setVisible(false);
-      setMessage('Config loaded. Review the provider and endpoint, then choose Use provider.');
+      setMessage('Config loaded. Review the provider and endpoint, then choose Save settings.');
     } catch {
       setError(
         'Invalid config file. Choose a Parallax provider config JSON file smaller than 64 KB.',
@@ -79,10 +79,10 @@ function SettingsForm() {
       </Link>
       <h1>Provider settings</h1>
       <p className="document-lead">
-        Choose a vision model and enter your own API key. No account is required by Parallax.
+        Choose a vision model and enter your API key or local endpoint.
       </p>
       <p className="fine-print">
-        Use provider saves all profiles, including keys, in this browser on this device. They are
+        Save settings saves all profiles, including keys, in this browser on this device. They are
         unencrypted in browser storage and are never written to the project folder or included in
         reports.
       </p>
@@ -183,7 +183,7 @@ function SettingsForm() {
           </p>
         )}
         <button className="button primary" onClick={apply}>
-          Use provider
+          Save settings
         </button>
         {error && (
           <p className="error-box" role="alert">
