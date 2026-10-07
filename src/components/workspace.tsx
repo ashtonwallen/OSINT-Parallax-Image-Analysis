@@ -81,7 +81,7 @@ function WorkspaceSession() {
     <div className="workspace">
       <div className="page-heading">
         <div>
-          <h1>Image analysis</h1>
+          <h1>Forensic image analysis</h1>
         </div>
         <Link href="/report" className="button secondary report-top">
           <FileText size={16} />

@@ -7,7 +7,7 @@ test('demo, tool navigation, exports and mobile layout', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Image analysis' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Forensic image analysis' })).toBeVisible();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(page.getByText('square-synthetic.jpg', { exact: true }).last()).toBeVisible();
   await expect(page.getByText('No readable camera or editing metadata.')).toBeVisible();
@@ -146,7 +146,9 @@ test('mobile workspace keeps tools before samples and history closes with Escape
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Image analysis', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Forensic image analysis', exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole('tablist')).toHaveCount(0);
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(page.getByRole('tablist')).toBeVisible();
