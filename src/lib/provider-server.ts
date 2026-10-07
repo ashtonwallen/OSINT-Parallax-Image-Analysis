@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { checkProviderResponse } from './provider-errors';
 import { analysisSchema } from './schema';
 import { analysisPrompt, chatBody, parseAnalysis } from './providers';
 import {
@@ -20,7 +21,7 @@ export function cloudChatRequest(
   if (provider === 'anthropic')
     request.body = {
       model,
-      max_tokens: 2000,
+      max_tokens: 4000,
       system: conversationPrompt(conversation),
       messages: conversation.messages.map((message, i) =>
         i === 0
@@ -58,12 +59,13 @@ export function cloudChatRequest(
   else
     request.body = {
       ...followUpBody(model, image, conversation, true),
-      max_completion_tokens: 2000,
+      max_completion_tokens: 8000,
       store: false,
     };
   return request;
 }
 export function cloudChatResult(provider: CloudProvider, data: unknown): string {
+  checkProviderResponse(provider, data);
   if (provider === 'anthropic') {
     const result = z
       .object({ content: z.array(z.object({ type: z.string(), text: z.string().optional() })) })
@@ -118,7 +120,7 @@ export function cloudRequest(
       },
       body: {
         model,
-        max_tokens: 6000,
+        max_tokens: 8000,
         system: analysisPrompt,
         tools: [
           {
@@ -160,10 +162,11 @@ export function cloudRequest(
   return {
     url: 'https://api.openai.com/v1/chat/completions',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-    body: { ...chatBody(model, image, true), max_completion_tokens: 6000, store: false },
+    body: { ...chatBody(model, image, true), max_completion_tokens: 12000, store: false },
   };
 }
 export function cloudResult(provider: CloudProvider, data: unknown) {
+  checkProviderResponse(provider, data);
   if (provider === 'anthropic') {
     const result = z
       .object({

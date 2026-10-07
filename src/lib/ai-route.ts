@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ProviderResponseError } from './provider-errors';
 import { rateLimit } from '@/lib/rate-limit';
 import {
   cloudRequest,
@@ -89,6 +90,8 @@ export async function handleAI(request: Request, chat: boolean) {
   } catch {
     return reply({ error: 'The request limiter is unavailable. Please retry later.' }, 503);
   }
+  const deadline = AbortSignal.timeout(180_000);
+  let stage: 'request' | 'response' = 'request';
   try {
     const upstream = data.conversation
       ? cloudChatRequest(data.provider, data.model, key, data.image, data.conversation)
@@ -97,7 +100,7 @@ export async function handleAI(request: Request, chat: boolean) {
       method: 'POST',
       headers: upstream.headers,
       body: JSON.stringify(upstream.body),
-      signal: AbortSignal.any([request.signal, AbortSignal.timeout(45_000)]),
+      signal: AbortSignal.any([request.signal, deadline]),
       cache: 'no-store',
       redirect: 'error',
     });
@@ -118,16 +121,49 @@ export async function handleAI(request: Request, chat: boolean) {
         response.status === 429 ? 429 : 502,
       );
     }
+    stage = 'response';
     const result = await response.json();
     return reply(
       chat ? { reply: cloudChatResult(data.provider, result) } : cloudResult(data.provider, result),
       200,
     );
-  } catch {
+  } catch (error) {
+    if (request.signal.aborted)
+      return reply({ code: 'cancelled', error: 'Analysis cancelled.' }, 499);
+    if (deadline.aborted || (error instanceof Error && error.name === 'TimeoutError'))
+      return reply(
+        {
+          code: 'timeout',
+          error:
+            'The provider did not finish within three minutes. Try a faster vision model or a focused category inspection.',
+        },
+        504,
+      );
+    if (error instanceof ProviderResponseError)
+      return reply({ code: error.code, error: error.message }, 502);
+    if (stage === 'request')
+      return reply(
+        {
+          code: 'connection',
+          error:
+            'Could not reach the provider. Check your connection or the provider status and retry.',
+        },
+        502,
+      );
+    if (error instanceof SyntaxError)
+      return reply(
+        {
+          code: 'invalid_json',
+          error:
+            'The provider returned invalid JSON. Retry analysis or choose a vision model with reliable structured output.',
+        },
+        502,
+      );
     return reply(
       {
+        code: 'invalid_format',
         error:
-          'The provider timed out or returned an incomplete response. Check the model and retry.',
+          'The provider response did not match the required findings format. Retry analysis or choose a model with structured-output support.',
       },
       502,
     );

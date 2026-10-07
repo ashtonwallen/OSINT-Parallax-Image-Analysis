@@ -62,7 +62,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <span className="brand-mark">
             <Aperture size={25} />
           </span>
-          parallax<span className="brand-dot">.</span>
+          <span className="brand-copy">
+            <span>
+              parallax<span className="brand-dot">.</span>
+            </span>
+            <small>Open source image intelligence</small>
+          </span>
         </Link>
         <div className="sidebar-body">
           <span className="eyebrow sidebar-caption">WORKSPACE</span>

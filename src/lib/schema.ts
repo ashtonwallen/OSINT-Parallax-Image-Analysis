@@ -36,6 +36,7 @@ export const analysisSchema = z.object({
   clues: z.array(clueSchema).max(18),
   summary: z.string().max(800),
   hypotheses: hypothesesSchema.optional(),
+  warnings: z.array(z.string().max(300)).max(8).optional(),
 });
 export type Clue = z.infer<typeof clueSchema>;
 export type Analysis = z.infer<typeof analysisSchema> & { provenance?: string };

@@ -2388,3 +2388,48 @@ h1 {
     font-size: 11px;
   }
 }
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+.brand-copy > span {
+  line-height: 1;
+}
+.brand-copy small {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #b1b1b1;
+  line-height: 1.4;
+}
+.analysis-wait {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  margin-top: 12px;
+  color: var(--muted);
+}
+@media (min-width: 761px) and (max-width: 1000px) {
+  .brand-copy {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .brand {
+    padding-left: 12px;
+    padding-right: 6px;
+    gap: 6px;
+  }
+  .brand-copy small {
+    font-size: 8px;
+    max-width: 120px;
+  }
+  .brand-copy {
+    gap: 4px;
+  }
+}

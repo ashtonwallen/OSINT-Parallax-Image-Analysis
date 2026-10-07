@@ -118,3 +118,29 @@ test('category inspection sends a crop, keeps separate history, and preserves ca
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('analysis can be cancelled without replacing existing findings', async ({ page }) => {
+  await page.goto('./settings');
+  await page.getByPlaceholder('Enter your API key').fill('dummy-cancel-test');
+  await page.getByRole('button', { name: 'Save settings' }).click();
+  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('button', { name: /The afternoon square/ }).click();
+  await expect(
+    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  let release: (() => void) | undefined;
+  await page.route('**/api/analyze', async (route) => {
+    await new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await route.abort().catch(() => {});
+  });
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Analyze visual clues' }).click();
+  await expect.poll(() => Boolean(release)).toBe(true);
+  await page.getByRole('button', { name: 'Cancel analysis' }).click();
+  release!();
+  await expect(page.getByRole('button', { name: 'Analyze visual clues' })).toBeEnabled();
+  await expect(page.getByText('ILLUSTRATIVE DEMO', { exact: true })).toBeVisible();
+});

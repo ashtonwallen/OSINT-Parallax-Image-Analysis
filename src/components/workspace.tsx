@@ -82,7 +82,6 @@ function WorkspaceSession() {
       <div className="page-heading">
         <div>
           <h1>Image analysis</h1>
-          <p>Open source image intelligence</p>
         </div>
         <Link href="/report" className="button secondary report-top">
           <FileText size={16} />
@@ -517,6 +516,20 @@ function VisualClues() {
             {running ? <LoaderCircle className="spin" size={16} /> : <Sparkles size={16} />}{' '}
             {running ? 'Reading visual clues…' : 'Analyze visual clues'}
           </button>
+          {running && (
+            <div className="analysis-wait">
+              <span role="status">
+                Waiting for {providerName}. This can take up to three minutes.
+              </span>
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => request.current?.abort()}
+              >
+                Cancel analysis
+              </button>
+            </div>
+          )}
         </div>
       )}
       {error && (
@@ -526,6 +539,11 @@ function VisualClues() {
       )}
       {analysis ? (
         <>
+          {analysis.warnings?.map((warning) => (
+            <p className="notice" role="status" key={warning}>
+              {warning}
+            </p>
+          ))}
           <div className="findings-header">
             <span>{analysis.clues.length} OBSERVATIONS</span>
             <span className="pill amber">

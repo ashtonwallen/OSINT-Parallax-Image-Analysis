@@ -58,6 +58,7 @@ export function reportMarkdown({
       : 'No search services opened.',
     '',
     '## Visual observations',
+    ...(analysis?.warnings || []).map((warning) => `Note: ${clean(warning)}`),
     analysis
       ? `Source: ${analysisSource === 'demo' ? 'Hand-authored illustrative demo clues, not AI analysis.' : `${clean(analysis.provenance || 'AI analysis')}; unverified.`}`
       : 'No visual analysis performed.',
