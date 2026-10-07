@@ -13,9 +13,9 @@ export function HistoryPane({ close, overlay }: { close: () => void; overlay: bo
   const router = useRouter();
   const [deleting, setDeleting] = useState('');
   return (
-    <aside id="investigation-history" className="history-pane" aria-label="Investigation history">
+    <aside id="investigation-history" className="history-pane" aria-label="Analysis history">
       <div className="history-heading">
-        <h2>Investigations</h2>
+        <h2>Analyses</h2>
         <button
           ref={closeButton}
           className="text-button"
@@ -77,7 +77,7 @@ export function HistoryPane({ close, overlay }: { close: () => void; overlay: bo
         ))}
         {history.length === 0 && (
           <p className="history-empty">
-            No saved investigations.
+            No saved analyses.
             <br />
             Open an image to start one.
           </p>

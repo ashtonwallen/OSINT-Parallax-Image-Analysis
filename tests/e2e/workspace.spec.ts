@@ -11,7 +11,7 @@ test('demo, tool navigation, exports and mobile layout', async ({ page }) => {
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(page.getByText('square-synthetic.jpg', { exact: true }).last()).toBeVisible();
   await expect(page.getByText('No readable camera or editing metadata.')).toBeVisible();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   await expect(page.getByText('6 OBSERVATIONS')).toBeVisible();
   await expect(page.getByText('No provider configured')).toBeVisible();
   await page.screenshot({ path: 'docs/screenshot.png', fullPage: true });
@@ -35,7 +35,7 @@ test('demo, tool navigation, exports and mobile layout', async ({ page }) => {
     page.getByRole('heading', { name: 'Verification report', exact: true, level: 1 }),
   ).toBeVisible();
   await page
-    .getByLabel('05 / Investigator notes')
+    .getByLabel('05 / Analysis notes')
     .fill('Source reviewed: https://example.com\nUnconfirmed hypothesis.');
   const mdDownload = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download Markdown' }).click();
@@ -51,9 +51,9 @@ test('demo, tool navigation, exports and mobile layout', async ({ page }) => {
   const bytes = await fs.readFile((await pdf.path())!);
   expect(bytes.subarray(0, 4).toString()).toBe('%PDF');
   expect(bytes.length).toBeGreaterThan(10000);
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('button', { name: /A quiet northern harbor/ }).click();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   await expect(page.getByText('No legible signage is visible.')).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: 'docs/mobile.png', fullPage: true });
@@ -69,11 +69,11 @@ test('local upload never posts image data and rejects invalid files', async ({ p
   });
   await page.goto('./');
   await page
-    .getByLabel('Upload investigation image')
+    .getByLabel('Upload analysis image')
     .setInputFiles(path.resolve('public/samples/square.jpg'));
   await expect(page.getByText('square.jpg', { exact: true }).last()).toBeVisible();
   expect(posts).toEqual([]);
-  await page.getByLabel('Upload investigation image').setInputFiles({
+  await page.getByLabel('Upload analysis image').setInputFiles({
     name: 'invalid.txt',
     mimeType: 'text/plain',
     buffer: Buffer.from('not an image'),
@@ -110,7 +110,7 @@ test('extracts camera, date, software and GPS from a real EXIF fixture', async (
   });
   await page.goto('./');
   await page
-    .getByLabel('Upload investigation image')
+    .getByLabel('Upload analysis image')
     .setInputFiles({ name: 'exif-fixture.jpg', mimeType: 'image/jpeg', buffer });
   await expect(page.getByText('Fixture Camera', { exact: true })).toBeVisible();
   await expect(page.getByText('Fixture Generator', { exact: true })).toBeVisible();
@@ -129,7 +129,7 @@ test('workspace has no automated WCAG A/AA accessibility violations', async ({ p
   await page.goto('./');
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(page.getByText('No readable camera or editing metadata.')).toBeVisible();
-  for (const tab of ['Metadata', 'Reverse search', 'Chronolocation', 'Visual clues']) {
+  for (const tab of ['Metadata', 'AI analysis', 'Reverse search', 'Chronolocation']) {
     await page.getByRole('tab', { name: tab, exact: true }).click();
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
@@ -159,10 +159,10 @@ test('mobile workspace keeps tools before samples and history closes with Escape
   await page.getByRole('button', { name: 'History', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Close history', exact: true })).toBeFocused();
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('complementary', { name: 'Investigation history' })).toHaveCount(0);
+  await expect(page.getByRole('complementary', { name: 'Analysis history' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'History', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'History', exact: true }).click();
   await expect(page.locator('.history-open')).toHaveCount(1);
   await page.locator('.history-open').click();
-  await expect(page.getByRole('complementary', { name: 'Investigation history' })).toHaveCount(0);
+  await expect(page.getByRole('complementary', { name: 'Analysis history' })).toHaveCount(0);
 });

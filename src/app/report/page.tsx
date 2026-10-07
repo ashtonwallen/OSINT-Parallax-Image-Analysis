@@ -42,10 +42,10 @@ export default function Report() {
     <div className="document-page">
       <Link href="/" className="text-button">
         <ArrowLeft size={14} />
-        Back to investigation
+        Back to analysis
       </Link>
       <div className="eyebrow" style={{ color: 'var(--accent)', marginTop: 30 }}>
-        INVESTIGATION OUTPUT
+        ANALYSIS OUTPUT
       </div>
       <h1>Verification report</h1>
       <p className="document-lead">Export image details, observations, notes, and hypotheses.</p>
@@ -53,14 +53,14 @@ export default function Report() {
       {!evidence ? (
         <div className="panel report-empty">
           <FileText size={40} strokeWidth={1} />
-          <h2>No investigation loaded</h2>
+          <h2>No analysis loaded</h2>
           <p>
             Upload an image or load a sample to create a report.
             <br />
             Reopen an existing case from the History pane, or upload a new image.
           </p>
           <Link href="/" className="button primary">
-            Start investigating
+            Start analysis
             <ArrowRight size={15} />
           </Link>
         </div>
@@ -74,7 +74,7 @@ export default function Report() {
                 {evidence.demo
                   ? 'This report uses a synthetic demo image. Its clues are illustrative.'
                   : 'Check independent sources before drawing conclusions.'}{' '}
-                Review GPS and personal notes before sharing. This investigation is saved in your
+                Review GPS and personal notes before sharing. This analysis is saved in your
                 browser history.
               </p>
             </div>
@@ -196,7 +196,7 @@ export default function Report() {
               </section>
               <section className="report-section">
                 <label className="report-note-label">
-                  05 / Investigator notes
+                  05 / Analysis notes
                   <textarea
                     value={notes}
                     maxLength={10000}

@@ -73,7 +73,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <span className="eyebrow sidebar-caption">WORKSPACE</span>
           <nav aria-label="Main navigation">
             {[
-              { href: '/', label: 'Investigation', icon: ScanLine },
+              { href: '/', label: 'Analysis', icon: ScanLine },
               { href: '/report', label: 'Verification report', icon: FileText },
               { href: '/methodology', label: 'Methodology', icon: BookOpen },
               { href: '/settings', label: 'Provider settings', icon: Settings2 },
@@ -95,10 +95,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             type="button"
             onClick={newInvestigation}
             className="new-case"
-            aria-label="New investigation"
+            aria-label="New analysis"
           >
             <Plus size={16} />
-            New investigation
+            New analysis
           </button>
           <div className="sidebar-note">
             <Fingerprint size={23} />
@@ -123,7 +123,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         className="sr-only"
         type="file"
         accept="image/jpeg,image/png,image/webp"
-        aria-label="New investigation image"
+        aria-label="New analysis image"
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) void load(file);

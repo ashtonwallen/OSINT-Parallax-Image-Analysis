@@ -40,9 +40,9 @@ import { analyzeImage } from '@/lib/analyze-client';
 import { estimateTime } from '@/lib/solar';
 const tabs = [
   { name: 'Metadata', icon: Camera },
+  { name: 'AI analysis', icon: ScanLine },
   { name: 'Reverse search', icon: Search },
   { name: 'Chronolocation', icon: Sun },
-  { name: 'Visual clues', icon: ScanLine },
 ] as const;
 const clueIcons = [Languages, Route, Building2, Trees, Car, CloudSun];
 export function Workspace() {
@@ -122,7 +122,7 @@ function WorkspaceSession() {
             >
               {evidence ? (
                 <div className="image-boundary">
-                  <img src={evidence.url} alt="Current investigation source" draggable={false} />
+                  <img src={evidence.url} alt="Current analysis source" draggable={false} />
                   {tab === 'Chronolocation' && (
                     <svg
                       className="measurement-layer"
@@ -197,7 +197,7 @@ function WorkspaceSession() {
                     <ImagePlus size={31} strokeWidth={1.4} />
                   </span>
                   <h3>Open an image</h3>
-                  <p>Drop an image here to start investigating.</p>
+                  <p>Drop an image here to start an analysis.</p>
                   <button className="button primary" onClick={() => input.current?.click()}>
                     <Upload size={16} />
                     Choose an image
@@ -248,8 +248,8 @@ function WorkspaceSession() {
               {evidence && (
                 <button
                   className="text-button"
-                  aria-label="Clear investigation"
-                  title="Clear investigation"
+                  aria-label="Clear analysis"
+                  title="Clear analysis"
                   onClick={ctx.clear}
                 >
                   <X size={15} />
@@ -261,7 +261,7 @@ function WorkspaceSession() {
             ref={input}
             type="file"
             className="sr-only"
-            aria-label="Upload investigation image"
+            aria-label="Upload analysis image"
             accept="image/jpeg,image/png,image/webp"
             onChange={(event) => {
               const file = event.target.files?.[0];
@@ -374,7 +374,7 @@ function WorkspaceSession() {
                 aria-labelledby={`tab-${tab.replaceAll(' ', '-')}`}
                 className="tool-content"
               >
-                {tab === 'Visual clues' ? (
+                {tab === 'AI analysis' ? (
                   <VisualClues key={evidence?.url} />
                 ) : tab === 'Metadata' ? (
                   <MetadataPanel key={evidence?.url} />
@@ -419,7 +419,7 @@ function WorkspaceSession() {
           >
             <X />
           </button>
-          <img src={evidence.url} alt="Expanded investigation source" />
+          <img src={evidence.url} alt="Expanded analysis source" />
         </div>
       )}
     </div>
@@ -470,7 +470,7 @@ function VisualClues() {
   return (
     <>
       <div className="section-intro">
-        <h3>Visual clues</h3>
+        <h3>AI analysis</h3>
         <p>Observations grouped by category, with confidence and suggested regions.</p>
       </div>
       {!aiEnabled && (

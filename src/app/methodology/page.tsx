@@ -11,7 +11,7 @@ export default function Methodology() {
     <div className="document-page">
       <Link href="/" className="text-button">
         <ArrowLeft size={14} />
-        Back to investigation
+        Back to analysis
       </Link>
       <div className="eyebrow" style={{ color: 'var(--accent)', marginTop: 32 }}>
         REFERENCE
@@ -99,7 +99,7 @@ export default function Methodology() {
             through Parallax; local and compatible requests go directly from the browser to your
             endpoint. Demo scenes use hand-authored example observations. Keys can be saved in an
             unencrypted local config file or browser storage and are never included in reports or
-            investigation history.
+            analysis history.
           </p>
           <h3>Where it stops</h3>
           <p>

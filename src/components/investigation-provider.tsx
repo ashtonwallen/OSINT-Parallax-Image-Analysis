@@ -118,7 +118,7 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
       .catch(() => {
         if (live)
           setHistoryError(
-            'Browser storage is unavailable. Investigations will only last for this session.',
+            'Browser storage is unavailable. Analyses will only last for this session.',
           );
       });
     return () => {
@@ -174,7 +174,7 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     try {
       const record = await readInvestigation(id);
-      if (!record) throw new Error('This saved investigation no longer exists.');
+      if (!record) throw new Error('This saved analysis no longer exists.');
       if (sequenceId !== sequence.current) return;
       if (currentUrl.current) URL.revokeObjectURL(currentUrl.current);
       const url = URL.createObjectURL(record.evidence.originalBlob);
@@ -191,7 +191,7 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
       setSessionId((value) => value + 1);
       setError('');
     } catch {
-      setHistoryError('Could not reopen this investigation. Its stored image may be unavailable.');
+      setHistoryError('Could not reopen this analysis. Its stored image may be unavailable.');
     } finally {
       if (sequenceId === sequence.current) setBusy(false);
     }
@@ -205,7 +205,7 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
       if (id === activeId) clear(false);
     } catch {
       deleted.current.delete(id);
-      setHistoryError('Could not delete this investigation. Try again.');
+      setHistoryError('Could not delete this analysis. Try again.');
     }
   }
   function reset() {
@@ -305,6 +305,6 @@ export function InvestigationProvider({ children }: { children: ReactNode }) {
 }
 export function useInvestigation() {
   const context = useContext(Context);
-  if (!context) throw new Error('Investigation context missing');
+  if (!context) throw new Error('Analysis context missing');
   return context;
 }

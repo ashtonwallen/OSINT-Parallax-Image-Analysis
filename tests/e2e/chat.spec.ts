@@ -5,12 +5,12 @@ test('follow-up supports context, retries, local history and report exports', as
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('openai');
   await page.getByPlaceholder('Enter your API key').fill('dummy-chat-key');
   await page.getByRole('button', { name: 'Save settings' }).click();
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
-    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+    page.getByRole('img', { name: 'Current analysis source', exact: true }),
   ).toBeVisible();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   let calls = 0;
   await page.route('**/api/chat', (route) => {
     const body = route.request().postDataJSON();
@@ -49,7 +49,7 @@ test('follow-up supports context, retries, local history and report exports', as
   expect(text).not.toContain('dummy-chat-key');
   await page.reload();
   await page.locator('.history-open').first().click();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   await expect(page.getByRole('log')).toContainText('Check the letter shapes');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -62,12 +62,12 @@ test('category inspection sends a crop, keeps separate history, and preserves ca
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('openai');
   await page.getByPlaceholder('Enter your API key').fill('dummy-category-key');
   await page.getByRole('button', { name: 'Save settings' }).click();
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
-    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+    page.getByRole('img', { name: 'Current analysis source', exact: true }),
   ).toBeVisible();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   const card = page
     .locator('.clue-card')
     .filter({ has: page.locator('summary', { hasText: 'Vegetation & climate' }) });
@@ -112,7 +112,7 @@ test('category inspection sends a crop, keeps separate history, and preserves ca
   );
   await page.reload();
   await page.locator('.history-open').first().click();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   await card.locator(':scope > summary').click();
   await expect(card.getByRole('log')).toContainText('Ornamental flowers');
   await page.setViewportSize({ width: 390, height: 844 });
@@ -123,12 +123,12 @@ test('analysis can be cancelled without replacing existing findings', async ({ p
   await page.goto('./settings');
   await page.getByPlaceholder('Enter your API key').fill('dummy-cancel-test');
   await page.getByRole('button', { name: 'Save settings' }).click();
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
-    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+    page.getByRole('img', { name: 'Current analysis source', exact: true }),
   ).toBeVisible();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   let release: (() => void) | undefined;
   await page.route('**/api/analyze', async (route) => {
     await new Promise<void>((resolve) => {

@@ -24,12 +24,12 @@ test('provider config files round-trip keys and cloud analysis uses the selected
   await expect(page.getByRole('combobox', { name: 'Provider', exact: true })).toHaveValue('openai');
   await expect(page.getByPlaceholder('Enter your API key')).toHaveValue('dummy-ui-key-for-test');
   await page.getByRole('button', { name: 'Save settings' }).click();
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
-    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+    page.getByRole('img', { name: 'Current analysis source', exact: true }),
   ).toBeVisible();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   let requestBody: Record<string, unknown> = {};
   await page.route('**/api/analyze', async (route) => {
     requestBody = route.request().postDataJSON();
@@ -80,12 +80,12 @@ test('local inference connects directly to the configured server', async ({ page
   await page.goto('./settings');
   await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption('local');
   await page.getByRole('button', { name: 'Save settings' }).click();
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
-    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+    page.getByRole('img', { name: 'Current analysis source', exact: true }),
   ).toBeVisible();
-  await page.getByRole('tab', { name: 'Visual clues' }).click();
+  await page.getByRole('tab', { name: 'AI analysis' }).click();
   let localCalled = false;
   const proxies: string[] = [];
   page.on('request', (r) => {
@@ -105,18 +105,18 @@ test('local inference connects directly to the configured server', async ({ page
   expect(proxies).toEqual([]);
 });
 
-test('new investigation opens file picker and saved investigations survive reload and can be deleted', async ({
+test('new analysis opens file picker and saved analyses survive reload and can be deleted', async ({
   page,
 }) => {
   await page.goto('./');
   await page.getByRole('button', { name: /The afternoon square/ }).click();
   await expect(
-    page.getByRole('img', { name: 'Current investigation source', exact: true }),
+    page.getByRole('img', { name: 'Current analysis source', exact: true }),
   ).toBeVisible();
   await page.getByRole('link', { name: 'View report' }).click();
-  await page.getByLabel('05 / Investigator notes').fill('Saved case notes.');
+  await page.getByLabel('05 / Analysis notes').fill('Saved case notes.');
   const chooserPromise = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: 'New investigation', exact: true }).click();
+  await page.getByRole('button', { name: 'New analysis', exact: true }).click();
   const chooser = await chooserPromise;
   await chooser.setFiles(path.resolve('public/samples/harbor.jpg'));
   await expect(page.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
@@ -127,9 +127,9 @@ test('new investigation opens file picker and saved investigations survive reloa
   await page.reload();
   await expect(page.locator('.history-open')).toHaveCount(2);
   await page.locator('.history-open').filter({ hasText: 'square-synthetic.jpg' }).click();
-  await expect(page.getByAltText('Current investigation source')).toBeVisible();
+  await expect(page.getByAltText('Current analysis source')).toBeVisible();
   await page.getByRole('link', { name: 'View report' }).click();
-  await expect(page.getByLabel('05 / Investigator notes')).toHaveValue('Saved case notes.');
+  await expect(page.getByLabel('05 / Analysis notes')).toHaveValue('Saved case notes.');
   await page.getByRole('button', { name: 'Delete square-synthetic.jpg', exact: true }).click();
   await page
     .locator('.history-confirm')
@@ -140,10 +140,10 @@ test('new investigation opens file picker and saved investigations survive reloa
   await expect(page.locator('.history-open')).toHaveCount(1);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'History', exact: true }).click();
-  await expect(page.getByRole('complementary', { name: 'Investigation history' })).toBeVisible();
+  await expect(page.getByRole('complementary', { name: 'Analysis history' })).toBeVisible();
   await page.getByRole('button', { name: 'Close history' }).click();
   const mobilePicker = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: 'New investigation', exact: true }).click();
+  await page.getByRole('button', { name: 'New analysis', exact: true }).click();
   await mobilePicker;
 });
 
@@ -190,7 +190,7 @@ test('unavailable browser storage keeps settings usable and reports the save fai
       { exact: true },
     ),
   ).toBeVisible();
-  await page.getByRole('link', { name: 'Back to investigation' }).click();
+  await page.getByRole('link', { name: 'Back to analysis' }).click();
   await page.getByRole('link', { name: 'Provider settings', exact: true }).click();
   await expect(page.getByPlaceholder('Enter your API key')).toHaveValue('dummy-unsaved-key');
 });

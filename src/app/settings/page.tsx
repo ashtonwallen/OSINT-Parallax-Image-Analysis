@@ -75,7 +75,7 @@ function SettingsForm() {
     <div className="document-page settings-page">
       <Link href="/" className="text-button">
         <ArrowLeft size={14} />
-        Back to investigation
+        Back to analysis
       </Link>
       <h1>Provider settings</h1>
       <p className="document-lead">
@@ -240,7 +240,7 @@ function SettingsForm() {
         <p className="fine-print">
           Applied settings restore automatically when you reopen this site in the same browser.
           Clearing site data removes them. Downloading a config file is optional; keys are never
-          included in investigation reports.
+          included in analysis reports.
         </p>
       </section>
     </div>

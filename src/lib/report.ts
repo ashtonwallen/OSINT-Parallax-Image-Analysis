@@ -80,7 +80,7 @@ export function reportMarkdown({
           '## Findings conversation (unverified)',
           '',
           ...chat.flatMap((message) => [
-            `### ${message.role === 'user' ? 'Investigator' : clean(message.provider || 'Assistant')}`,
+            `### ${message.role === 'user' ? 'Analyst' : clean(message.provider || 'Assistant')}`,
             ...(message.category ? [`Category: ${clean(message.category)}`] : []),
             clean(message.content),
             '',
@@ -115,12 +115,12 @@ export function reportMarkdown({
         ].join('\n\n')
       : 'No shadow hypothesis calculated.',
     '',
-    '## Investigator notes',
+    '## Analysis notes',
     notes.trim() || 'No notes recorded.',
     '',
     '## Limitations & ethics',
     'Corroborate with independent sources. AI and synthetic examples can be wrong. Reverse-search publication dates do not necessarily establish capture dates. Do not use this tool to locate private individuals. For verifying public and news imagery only.',
-    'Images and investigation state are saved locally in this browser. An explicit visual-analysis request sends a resized, metadata-stripped image to the selected provider; provider retention policies apply. Reports and investigation history contain no API keys. Review metadata and notes before sharing.',
+    'Images and analysis state are saved locally in this browser. An explicit visual-analysis request sends a resized, metadata-stripped image to the selected provider; provider retention policies apply. Reports and analysis history contain no API keys. Review metadata and notes before sharing.',
     '',
   ].join('\n');
 }
