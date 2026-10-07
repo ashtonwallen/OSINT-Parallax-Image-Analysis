@@ -581,7 +581,7 @@ function VisualClues() {
                         )}
                         {clues.length > 1 && (
                           <p className="fine-print">
-                            {item.confidence} observation confidence ? {item.region}
+                            {item.confidence} observation confidence &middot; {item.region}
                           </p>
                         )}
                       </div>
