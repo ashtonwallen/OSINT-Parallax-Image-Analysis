@@ -7,3 +7,6 @@ test-results/
 playwright-report/
 *.tsbuildinfo
 parallax-provider-config*.json
+
+# Local development notes
+/AGENTS.md
